@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Editor</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --dark: #1d3557;
+            --light: #f8f9fa;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        h1 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+        
+        .grid-section {
+            background-color: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+        
+        .cell {
+            aspect-ratio: 1/1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .cell:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+        }
+        
+        .cell.active {
+            background-color: var(--success);
+            border-color: var(--secondary);
+        }
+        
+        .cell.active::after {
+            content: "✓";
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn i {
+            font-size: 1.2rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .status.loading {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .instructions {
+            background-color: #e7f5ff;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+        
+        .instructions h3 {
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .grid-container {
+                gap: 3px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-th"></i> Grid Editor</h1>
+            <p class="subtitle">Edit and save JSON grid configuration files</p>
+        </header>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> How to use:</h3>
+            <ol>
+                <li>Upload a JSON file using the "Load File" button</li>
+                <li>Click on grid cells to toggle their state (active/inactive)</li>
+                <li>Download the modified file with the "Save File" button</li>
+                <li>Files maintain all original IDs and structure</li>
+            </ol>
+        </div>
+        
+        <div class="grid-section">
+            <div class="grid-container" id="gridContainer"></div>
+            
+            <div class="controls">
+                <button class="btn btn-secondary" id="loadBtn">
+                    <i class="fas fa-upload"></i> Load File
+                </button>
+                <button class="btn btn-primary" id="saveBtn">
+                    <i class="fas fa-download"></i> Save File
+                </button>
+                <button class="btn btn-secondary" id="clearBtn">
+                    <i class="fas fa-broom"></i> Clear Grid
+                </button>
+            </div>
+            
+            <div class="status" id="statusMessage"></div>
+        </div>
+        
+        <footer>
+            <p>Grid Editor Tool &copy; 2023 | Works with JSON grid configuration files</p>
+        </footer>
+    </div>
+
+    <script>
+        let gridData = Array(10).fill().map(() => Array(10).fill(false));
+        let jsonData = null;
+        let cellRefs = [];
+        
+        // Initialize grid UI
+        function initGrid() {
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = '';
+            cellRefs = [];
+            
+            for (let row = 0; row < 10; row++) {
+                for (let col = 0; col < 10; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = `cell ${gridData[col][row] ? 'active' : ''}`;
+                    cell.dataset.col = col;
+                    cell.dataset.row = row;
+                    
+                    cell.addEventListener('click', () => {
+                        const col = parseInt(cell.dataset.col);
+                        const row = parseInt(cell.dataset.row);
+                        gridData[col][row] = !gridData[col][row];
+                        cell.classList.toggle('active', gridData[col][row]);
+                    });
+                    
+                    container.appendChild(cell);
+                    cellRefs.push(cell);
+                }
+            }
+        }
+        
+        // Parse JSON and extract grid data
+        function parseJsonData(json) {
+            try {
+                const flagsGroup = json.script[0].children.true[1];
+                const columns = flagsGroup.children.true.slice(0, 10);
+                
+                columns.forEach((colGroup, colIndex) => {
+                    const flags = colGroup.children.true;
+                    flags.forEach((flagEvent, rowIndex) => {
+                        const hasTrueIncrement = flagEvent.children.true.some(
+                            e => e.command === "EVENT_INC_VALUE"
+                        );
+                        gridData[colIndex][rowIndex] = hasTrueIncrement;
+                    });
+                });
+                showStatus("File loaded successfully!", "success");
+                return true;
+            } catch (error) {
+                console.error("Parsing error:", error);
+                showStatus("Error: Invalid file structure", "error");
+                return false;
+            }
+        }
+        
+        // Update JSON with modified grid while preserving all IDs
+        function updateJsonData() {
+            const flagsGroup = jsonData.script[0].children.true[1];
+            const columns = flagsGroup.children.true.slice(0, 10);
+            
+            columns.forEach((colGroup, colIndex) => {
+                const flags = colGroup.children.true;
+                flags.forEach((flagEvent, rowIndex) => {
+                    const cellValue = gridData[colIndex][rowIndex];
+                    
+                    // Preserve existing EVENT_INC_VALUE objects
+                    let trueIncrement = flagEvent.children.true.find(
+                        e => e.command === "EVENT_INC_VALUE"
+                    );
+                    
+                    let falseIncrement = flagEvent.children.false.find(
+                        e => e.command === "EVENT_INC_VALUE"
+                    );
+                    
+                    // Clear arrays but keep other events if they exist
+                    flagEvent.children.true = flagEvent.children.true.filter(
+                        e => e.command !== "EVENT_INC_VALUE"
+                    );
+                    
+                    flagEvent.children.false = flagEvent.children.false.filter(
+                        e => e.command !== "EVENT_INC_VALUE"
+                    );
+                    
+                    // Add increment event to correct branch
+                    if (cellValue) {
+                        if (trueIncrement) {
+                            flagEvent.children.true.push(trueIncrement);
+                        } else if (falseIncrement) {
+                            flagEvent.children.true.push(falseIncrement);
+                        } else {
+                            // Create new event if none exists (preserve ID structure)
+                            flagEvent.children.true.push({
+                                command: "EVENT_INC_VALUE",
+                                args: { variable: "V1", __collapse: true },
+                                id: `gen_${colIndex}_${rowIndex}_${Date.now()}`
+                            });
+                        }
+                    } else {
+                        if (falseIncrement) {
+                            flagEvent.children.false.push(falseIncrement);
+                        } else if (trueIncrement) {
+                            flagEvent.children.false.push(trueIncrement);
+                        } else {
+                            flagEvent.children.false.push({
+                                command: "EVENT_INC_VALUE",
+                                args: { variable: "V1", __collapse: true },
+                                id: `gen_${colIndex}_${rowIndex}_${Date.now()}`
+                            });
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Show status message
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            
+            // Auto-hide success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusEl.textContent = '';
+                    statusEl.className = 'status';
+                }, 3000);
+            }
+        }
+        
+        // File handling
+        document.getElementById('loadBtn').addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+        
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            gridData = Array(10).fill().map(() => Array(10).fill(false));
+            initGrid();
+            showStatus("Grid cleared", "success");
+        });
+        
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.className = 'file-input';
+        fileInput.accept = '.txt,.json';
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            showStatus("Loading file...", "loading");
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    jsonData = JSON.parse(event.target.result);
+                    if (parseJsonData(jsonData)) {
+                        initGrid();
+                    }
+                } catch (error) {
+                    console.error("File error:", error);
+                    showStatus("Error: Invalid JSON file", "error");
+                }
+            };
+            reader.readAsText(file);
+        });
+        document.body.appendChild(fileInput);
+        
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            if (!jsonData) {
+                showStatus("Error: No file loaded", "error");
+                return;
+            }
+            
+            try {
+                updateJsonData();
+                const blob = new Blob([JSON.stringify(jsonData, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'grid_config.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus("File saved successfully!", "success");
+            } catch (error) {
+                console.error("Saving error:", error);
+                showStatus("Error saving file", "error");
+            }
+        });
+        
+        // Initialize with empty grid
+        initGrid();
+    </script>
+</body>
+</html>

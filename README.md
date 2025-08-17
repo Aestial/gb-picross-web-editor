@@ -1,0 +1,1 @@
+# GB Picross web editor
