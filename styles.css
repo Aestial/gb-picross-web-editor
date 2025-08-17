@@ -319,7 +319,7 @@ footer {
 }
 
 .column-hints .hint-cell {
-    flex-direction: column-reverse;
+    flex-direction: column;
 }
 
 .row-hints .hint-cell {
