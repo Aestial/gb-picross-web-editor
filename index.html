@@ -12,13 +12,20 @@
   <div class="container">
     <header>
       <h1>■ GB Picross Editor ■</h1>
-      <p class="subtitle">Edit .gbres files</p>
+      <p class="subtitle" id="subtitle">Edit .gbsres files</p>
+      <div class="language-selector">
+        <select id="languageSelect">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="zh">中文</option>
+        </select>
+      </div>
     </header>
 
-    <div class="instructions">
-      <h3>How to use:</h3>
-      <ol>
-        <li>Upload a .gbres file using the "Load File" button</li>
+    <div class="instructions" id="instructions">
+      <h3 id="howToUse">How to use:</h3>
+      <ol id="instructionsList">
+        <li>Upload a .gbsres file using the "Load File" button</li>
         <li>Select grid size (3x3, 5x5, or 10x10)</li>
         <li>Click on grid cells to toggle their state (active/inactive)</li>
         <li>Download the modified file with the "Save File" button</li>
@@ -40,7 +47,7 @@
         <button class="btn" id="loadBtn">
           Load File
         </button>
-        <input type="file" id="fileInput" class="file-input" accept=".gbres">
+        <input type="file" id="fileInput" class="file-input" accept=".gbsres">
         <button class="btn" id="saveBtn">
           Save File
         </button>
@@ -53,7 +60,7 @@
     </div>
 
     <footer>
-      <p>GB Picross Editor by Tamal Rosita 2025</p>
+      <p>GB Picross Editor &copy; Tamal Rosita 2025</p>
     </footer>
   </div>
 
