@@ -101,6 +101,72 @@ function updateLanguage() {
   document.getElementById("clearBtn").textContent = lang.buttons.clear;
 }
 
+// Calculate nonogram hints for a given array
+function calculateHints(arr) {
+    const hints = [];
+    let count = 0;
+    
+    for (const cell of arr) {
+        if (cell) {
+            count++;
+        } else if (count > 0) {
+            hints.push(count);
+            count = 0;
+        }
+    }
+    
+    if (count > 0) hints.push(count);
+    return hints.length > 0 ? hints : [0];
+}
+
+// Update nonogram hints display
+function updateHints() {
+    const columnHintsContainer = document.getElementById('columnHints');
+    const rowHintsContainer = document.getElementById('rowHints');
+    
+    // Clear existing hints
+    columnHintsContainer.innerHTML = '';
+    rowHintsContainer.innerHTML = '';
+    
+    // Calculate column hints
+    for (let col = 0; col < currentGridSize; col++) {
+        const column = [];
+        for (let row = 0; row < currentGridSize; row++) {
+            column.push(gridData[col][row]);
+        }
+        const hints = calculateHints(column);
+        
+        const hintCell = document.createElement('div');
+        hintCell.className = 'hint-cell';
+        hints.forEach(hint => {
+            const hintNumber = document.createElement('div');
+            hintNumber.className = 'hint-number';
+            hintNumber.textContent = hint;
+            hintCell.appendChild(hintNumber);
+        });
+        columnHintsContainer.appendChild(hintCell);
+    }
+    
+    // Calculate row hints
+    for (let row = 0; row < currentGridSize; row++) {
+        const rowData = [];
+        for (let col = 0; col < currentGridSize; col++) {
+            rowData.push(gridData[col][row]);
+        }
+        const hints = calculateHints(rowData);
+        
+        const hintCell = document.createElement('div');
+        hintCell.className = 'hint-cell';
+        hints.forEach(hint => {
+            const hintNumber = document.createElement('div');
+            hintNumber.className = 'hint-number';
+            hintNumber.textContent = hint;
+            hintCell.appendChild(hintNumber);
+        });
+        rowHintsContainer.appendChild(hintCell);
+    }
+}
+
 // Initialize grid UI
 function initGrid() {
   const container = document.getElementById("gridContainer");
@@ -125,6 +191,7 @@ function initGrid() {
         if (col < currentGridSize && row < currentGridSize) {
           gridData[col][row] = !gridData[col][row];
           cell.classList.toggle("active", gridData[col][row]);
+          updateHints(); // Update hints when grid changes
         }
       });
 
@@ -132,6 +199,8 @@ function initGrid() {
       cellRefs.push(cell);
     }
   }
+
+  updateHints(); // Initial hints calculation
 }
 
 // Parse JSON and extract grid data
@@ -149,6 +218,7 @@ function parseJsonData(json) {
         gridData[colIndex][rowIndex] = hasTrueIncrement;
       });
     });
+    updateHints(); // Add this line
     showStatus(translations[currentLanguage].status.success, "success");
     return true;
   } catch (error) {
@@ -317,6 +387,7 @@ function initEventListeners() {
       .fill()
       .map(() => Array(10).fill(false));
     initGrid();
+    updateHints(); // Add this line
     showStatus(translations[currentLanguage].status.cleared, "success");
   });
 
