@@ -273,8 +273,6 @@ footer {
     border-color: var(--link-color);
 }
 
-/* Previous styles remain, add these new rules */
-
 .nonogram-container {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -290,6 +288,7 @@ footer {
     border: 2px solid var(--border-color);
     border-radius: 4px;
     padding: 5px;
+    overflow: hidden;
 }
 
 .column-hints {
@@ -298,6 +297,7 @@ footer {
     flex-direction: row;
     justify-content: space-around;
     margin-bottom: 5px;
+    height: 100px; /* Fixed height for column hints */
 }
 
 .row-hints {
@@ -306,6 +306,7 @@ footer {
     flex-direction: column;
     justify-content: space-around;
     margin-right: 5px;
+    width: 100px; /* Fixed width for row hints */
 }
 
 .hint-cell {
@@ -332,6 +333,7 @@ footer {
     margin: 1px;
     text-align: center;
     min-width: 15px;
+    line-height: 1.15;
 }
 
 .grid-container {
