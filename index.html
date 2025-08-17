@@ -2,487 +2,62 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grid Editor</title>
-    <style>
-        :root {
-            --bg-color: #071821;
-            --fg-color: #e0f8cf;
-            --link-color: #86c06c;
-            --border-color: #364750;
-            --cell-active: #86c06c;
-            --cell-inactive: #364750;
-            --status-success: #2e8b57;
-            --status-error: #d62c2c;
-            --status-loading: #d4a017;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Courier New', monospace;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--fg-color);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            line-height: 1.5;
-        }
-
-        .container {
-            background-color: var(--bg-color);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            padding: 25px;
-            width: 100%;
-            max-width: 800px;
-            margin: 20px auto;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-        }
-
-        h1 {
-            color: var(--fg-color);
-            margin-bottom: 10px;
-            font-size: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .subtitle {
-            color: var(--link-color);
-            font-size: 1rem;
-        }
-
-        .grid-section {
-            background-color: var(--bg-color);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 4px;
-            margin: 20px auto;
-            max-width: 500px;
-        }
-
-        .cell {
-            aspect-ratio: 1/1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: var(--cell-inactive);
-            border: 2px solid var(--border-color);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.1s ease;
-        }
-
-        .cell:hover {
-            transform: scale(1.05);
-            border-color: var(--link-color);
-        }
-
-        .cell.active {
-            background-color: var(--cell-active);
-            border-color: var(--cell-active);
-        }
-
-        .cell.active::after {
-            content: "■";
-            color: var(--bg-color);
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
-            justify-content: center;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            flex: 1;
-            min-width: 120px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            background-color: var(--bg-color);
-            color: var(--fg-color);
-            text-transform: uppercase;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            border-color: var(--link-color);
-            color: var(--link-color);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .status {
-            text-align: center;
-            padding: 12px;
-            margin-top: 20px;
-            border-radius: 6px;
-            font-weight: 500;
-            border: 2px solid var(--border-color);
-        }
-
-        .status.loading {
-            background-color: var(--bg-color);
-            border-color: var(--status-loading);
-            color: var(--status-loading);
-        }
-
-        .status.success {
-            background-color: var(--bg-color);
-            border-color: var(--status-success);
-            color: var(--status-success);
-        }
-
-        .status.error {
-            background-color: var(--bg-color);
-            border-color: var(--status-error);
-            color: var(--status-error);
-        }
-
-        .instructions {
-            background-color: var(--bg-color);
-            border-left: 4px solid var(--link-color);
-            padding: 15px;
-            border-radius: 0 6px 6px 0;
-            margin: 20px 0;
-            border: 1px solid var(--border-color);
-        }
-
-        .instructions h3 {
-            color: var(--link-color);
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-
-        .instructions ol {
-            padding-left: 20px;
-        }
-
-        .instructions li {
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            color: var(--border-color);
-            font-size: 0.8rem;
-            border-top: 1px solid var(--border-color);
-            padding-top: 15px;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 15px;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .grid-container {
-                gap: 3px;
-            }
-
-            .controls {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GB Picross Editor</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <h1>■ Grid Editor ■</h1>
-            <p class="subtitle">Edit JSON grid configuration files</p>
-        </header>
+  <div class="container">
+    <header>
+      <h1>■ GB Picross Editor ■</h1>
+      <p class="subtitle">Edit .gbres files</p>
+    </header>
 
-        <div class="instructions">
-            <h3>How to use:</h3>
-            <ol>
-                <li>Upload a JSON file using the "Load File" button</li>
-                <li>Click on grid cells to toggle their state (active/inactive)</li>
-                <li>Download the modified file with the "Save File" button</li>
-            </ol>
-        </div>
-
-        <div class="grid-section">
-            <div class="grid-container" id="gridContainer"></div>
-
-            <div class="controls">
-                <button class="btn" id="loadBtn">
-                    Load File
-                </button>
-                <input type="file" id="fileInput" class="file-input" accept=".json,.txt">
-                <button class="btn" id="saveBtn">
-                    Save File
-                </button>
-                <button class="btn" id="clearBtn">
-                    Clear Grid
-                </button>
-            </div>
-
-            <div class="status" id="statusMessage"></div>
-        </div>
-
-        <footer>
-            <p>Grid Editor Tool</p>
-        </footer>
+    <div class="instructions">
+      <h3>How to use:</h3>
+      <ol>
+        <li>Upload a .gbres file using the "Load File" button</li>
+        <li>Select grid size (3x3, 5x5, or 10x10)</li>
+        <li>Click on grid cells to toggle their state (active/inactive)</li>
+        <li>Download the modified file with the "Save File" button</li>
+      </ol>
     </div>
 
-    <script>
-        let gridData = Array(10).fill().map(() => Array(10).fill(false));
-        let jsonData = null;
-        let cellRefs = [];
+    <div class="grid-section">
+      <div class="size-selector">
+        <select id="gridSize">
+          <option value="3">3x3</option>
+          <option value="5">5x5</option>
+          <option value="10" selected>10x10</option>
+        </select>
+      </div>
 
-        // Initialize grid UI
-        function initGrid() {
-            const container = document.getElementById('gridContainer');
-            container.innerHTML = '';
-            cellRefs = [];
+      <div class="grid-container" id="gridContainer"></div>
 
-            for (let row = 0; row < 10; row++) {
-                for (let col = 0; col < 10; col++) {
-                    const cell = document.createElement('div');
-                    cell.className = `cell ${gridData[col][row] ? 'active' : ''}`;
-                    cell.dataset.col = col;
-                    cell.dataset.row = row;
+      <div class="controls">
+        <button class="btn" id="loadBtn">
+          Load File
+        </button>
+        <input type="file" id="fileInput" class="file-input" accept=".gbres">
+        <button class="btn" id="saveBtn">
+          Save File
+        </button>
+        <button class="btn" id="clearBtn">
+          Clear Grid
+        </button>
+      </div>
 
-                    cell.addEventListener('click', () => {
-                        const col = parseInt(cell.dataset.col);
-                        const row = parseInt(cell.dataset.row);
-                        gridData[col][row] = !gridData[col][row];
-                        cell.classList.toggle('active', gridData[col][row]);
-                    });
+      <div class="status" id="statusMessage"></div>
+    </div>
 
-                    container.appendChild(cell);
-                    cellRefs.push(cell);
-                }
-            }
-        }
+    <footer>
+      <p>GB Picross Editor by Tamal Rosita 2025</p>
+    </footer>
+  </div>
 
-        // Parse JSON and extract grid data
-        function parseJsonData(json) {
-            try {
-                const flagsGroup = json.script[0].children.true[1];
-                const columns = flagsGroup.children.true.slice(0, 10);
-
-                columns.forEach((colGroup, colIndex) => {
-                    const flags = colGroup.children.true;
-                    flags.forEach((flagEvent, rowIndex) => {
-                        const hasTrueIncrement = flagEvent.children.true.some(
-                            e => e.command === "EVENT_INC_VALUE"
-                        );
-                        gridData[colIndex][rowIndex] = hasTrueIncrement;
-                    });
-                });
-                showStatus("File loaded successfully!", "success");
-                return true;
-            } catch (error) {
-                console.error("Parsing error:", error);
-                showStatus("Error: Invalid file structure", "error");
-                return false;
-            }
-        }
-
-        // Update JSON with modified grid while preserving all IDs
-        function updateJsonData() {
-            const flagsGroup = jsonData.script[0].children.true[1];
-            const columns = flagsGroup.children.true.slice(0, 10);
-
-            columns.forEach((colGroup, colIndex) => {
-                const flags = colGroup.children.true;
-                flags.forEach((flagEvent, rowIndex) => {
-                    const cellValue = gridData[colIndex][rowIndex];
-
-                    // Preserve existing EVENT_INC_VALUE objects
-                    let trueIncrement = flagEvent.children.true.find(
-                        e => e.command === "EVENT_INC_VALUE"
-                    );
-
-                    let falseIncrement = flagEvent.children.false.find(
-                        e => e.command === "EVENT_INC_VALUE"
-                    );
-
-                    // Clear arrays but keep other events if they exist
-                    flagEvent.children.true = flagEvent.children.true.filter(
-                        e => e.command !== "EVENT_INC_VALUE"
-                    );
-
-                    flagEvent.children.false = flagEvent.children.false.filter(
-                        e => e.command !== "EVENT_INC_VALUE"
-                    );
-
-                    // Add increment event to correct branch
-                    if (cellValue) {
-                        if (trueIncrement) {
-                            flagEvent.children.true.push(trueIncrement);
-                        } else if (falseIncrement) {
-                            flagEvent.children.true.push(falseIncrement);
-                        } else {
-                            // Create new event if none exists (preserve ID structure)
-                            flagEvent.children.true.push({
-                                command: "EVENT_INC_VALUE",
-                                args: { variable: "V1", __collapse: true },
-                                id: `gen_${colIndex}_${rowIndex}_${Date.now()}`
-                            });
-                        }
-                    } else {
-                        if (falseIncrement) {
-                            flagEvent.children.false.push(falseIncrement);
-                        } else if (trueIncrement) {
-                            flagEvent.children.false.push(trueIncrement);
-                        } else {
-                            flagEvent.children.false.push({
-                                command: "EVENT_INC_VALUE",
-                                args: { variable: "V1", __collapse: true },
-                                id: `gen_${colIndex}_${rowIndex}_${Date.now()}`
-                            });
-                        }
-                    }
-                });
-            });
-        }
-
-        // Show status message
-        function showStatus(message, type) {
-            const statusEl = document.getElementById('statusMessage');
-            statusEl.textContent = message;
-            statusEl.className = `status ${type}`;
-
-            // Auto-hide success messages
-            if (type === 'success') {
-                setTimeout(() => {
-                    statusEl.textContent = '';
-                    statusEl.className = 'status';
-                }, 3000);
-            }
-        }
-
-        // Initialize event listeners
-        function initEventListeners() {
-            const loadBtn = document.getElementById('loadBtn');
-            const fileInput = document.getElementById('fileInput');
-            const saveBtn = document.getElementById('saveBtn');
-            const clearBtn = document.getElementById('clearBtn');
-
-            loadBtn.addEventListener('click', () => {
-                fileInput.value = ''; // Reset to allow re-uploading same file
-                fileInput.click();
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                showStatus("Loading file...", "loading");
-
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    try {
-                        jsonData = JSON.parse(event.target.result);
-                        if (parseJsonData(jsonData)) {
-                            initGrid();
-                        }
-                    } catch (error) {
-                        console.error("File error:", error);
-                        showStatus("Error: Invalid JSON file", "error");
-                    }
-                };
-                reader.onerror = () => {
-                    showStatus("Error reading file", "error");
-                };
-                reader.readAsText(file);
-            });
-
-            saveBtn.addEventListener('click', () => {
-                if (!jsonData) {
-                    showStatus("Error: No file loaded", "error");
-                    return;
-                }
-
-                try {
-                    updateJsonData();
-                    const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'grid_config.json';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-
-                    showStatus("File saved successfully!", "success");
-                } catch (error) {
-                    console.error("Saving error:", error);
-                    showStatus("Error saving file", "error");
-                }
-            });
-
-            clearBtn.addEventListener('click', () => {
-                gridData = Array(10).fill().map(() => Array(10).fill(false));
-                initGrid();
-                showStatus("Grid cleared", "success");
-            });
-        }
-
-        // Initialize the app
-        function initApp() {
-            initGrid();
-            initEventListeners();
-        }
-
-        // Start the app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
+  <script src="script.js"></script>
 </body>
 
 </html>
