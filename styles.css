@@ -282,6 +282,7 @@ footer {
     max-width: 550px;
 }
 
+/* Hint Container Sizing with fixed positioning */
 .hint-container {
     display: flex;
     background-color: var(--bg-color);
@@ -295,36 +296,45 @@ footer {
     grid-column: 2;
     grid-row: 1;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: flex-start; /* Changed from space-around */
     margin-bottom: 5px;
-    height: 100px; /* Fixed height for column hints */
+    height: 100px;
+    gap: 4px; /* Match grid gap */
 }
 
 .row-hints {
     grid-column: 1;
     grid-row: 2;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: flex-start; /* Changed from space-around */
     margin-right: 5px;
-    width: 100px; /* Fixed width for row hints */
+    width: 100px;
+    gap: 4px; /* Match grid gap */
 }
 
 .hint-cell {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    align-items: center;
-    min-width: 30px;
-    min-height: 30px;
+    min-width: 40px;
+    min-height: 40px;
     padding: 2px;
+    box-sizing: border-box;
 }
 
+/* Column hint cells - fixed positioning */
 .column-hints .hint-cell {
-    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    justify-content: flex-end;
 }
 
+/* Row hint cells - fixed positioning */
 .row-hints .hint-cell {
+    width: 100%;
     flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .hint-number {
@@ -333,7 +343,12 @@ footer {
     margin: 1px;
     text-align: center;
     min-width: 15px;
-    line-height: 1.15;
+    line-height: 1;
+}
+
+/* Add invisible placeholder cells for smaller grids */
+.hint-cell.placeholder {
+    visibility: hidden;
 }
 
 .grid-container {

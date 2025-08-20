@@ -119,7 +119,7 @@ function calculateHints(arr) {
   return hints.length > 0 ? hints : [0];
 }
 
-// Update nonogram hints display
+// Update nonogram hints display with fixed positioning
 function updateHints() {
   const columnHintsContainer = document.getElementById("columnHints");
   const rowHintsContainer = document.getElementById("rowHints");
@@ -128,41 +128,67 @@ function updateHints() {
   columnHintsContainer.innerHTML = "";
   rowHintsContainer.innerHTML = "";
 
-  // Calculate column hints
-  for (let col = 0; col < currentGridSize; col++) {
-    const column = [];
-    for (let row = 0; row < currentGridSize; row++) {
-      column.push(gridData[col][row]);
-    }
-    const hints = calculateHints(column);
-
+  // Create all 10 column hint cells (with placeholders for unused ones)
+  for (let col = 0; col < 10; col++) {
     const hintCell = document.createElement("div");
     hintCell.className = "hint-cell";
-    hints.forEach((hint) => {
+
+    if (col < currentGridSize) {
+      // Calculate hints for active columns
+      const column = [];
+      for (let row = 0; row < currentGridSize; row++) {
+        column.push(gridData[col][row]);
+      }
+      const hints = calculateHints(column, true);
+
+      // Add hint numbers
+      hints.forEach((hint) => {
+        const hintNumber = document.createElement("div");
+        hintNumber.className = "hint-number";
+        hintNumber.textContent = hint;
+        hintCell.appendChild(hintNumber);
+      });
+    } else {
+      // Add placeholder for inactive columns
+      hintCell.classList.add("placeholder");
       const hintNumber = document.createElement("div");
       hintNumber.className = "hint-number";
-      hintNumber.textContent = hint;
+      hintNumber.textContent = "0";
       hintCell.appendChild(hintNumber);
-    });
+    }
+
     columnHintsContainer.appendChild(hintCell);
   }
 
-  // Calculate row hints
-  for (let row = 0; row < currentGridSize; row++) {
-    const rowData = [];
-    for (let col = 0; col < currentGridSize; col++) {
-      rowData.push(gridData[col][row]);
-    }
-    const hints = calculateHints(rowData);
-
+  // Create all 10 row hint cells (with placeholders for unused ones)
+  for (let row = 0; row < 10; row++) {
     const hintCell = document.createElement("div");
     hintCell.className = "hint-cell";
-    hints.forEach((hint) => {
+
+    if (row < currentGridSize) {
+      // Calculate hints for active rows
+      const rowData = [];
+      for (let col = 0; col < currentGridSize; col++) {
+        rowData.push(gridData[col][row]);
+      }
+      const hints = calculateHints(rowData);
+
+      // Add hint numbers
+      hints.forEach((hint) => {
+        const hintNumber = document.createElement("div");
+        hintNumber.className = "hint-number";
+        hintNumber.textContent = hint;
+        hintCell.appendChild(hintNumber);
+      });
+    } else {
+      // Add placeholder for inactive rows
+      hintCell.classList.add("placeholder");
       const hintNumber = document.createElement("div");
       hintNumber.className = "hint-number";
-      hintNumber.textContent = hint;
+      hintNumber.textContent = "0";
       hintCell.appendChild(hintNumber);
-    });
+    }
+
     rowHintsContainer.appendChild(hintCell);
   }
 }
