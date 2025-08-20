@@ -22,6 +22,7 @@ const translations = {
       noFile: "Error: No file loaded",
       saved: "File saved successfully!",
       cleared: "Grid cleared",
+      sizeChange: "Grid size changed",
     },
   },
   es: {
@@ -46,6 +47,7 @@ const translations = {
       noFile: "Error: No hay archivo cargado",
       saved: "¡Archivo guardado correctamente!",
       cleared: "Cuadrícula limpiada",
+      sizeChange: "Tamaño de cuadrícula cambiado",
     },
   },
   zh: {
@@ -70,6 +72,7 @@ const translations = {
       noFile: "错误: 没有加载文件",
       saved: "文件保存成功!",
       cleared: "网格已清除",
+      sizeChange: "网格大小已更改",
     },
   },
 };
@@ -326,7 +329,13 @@ function showStatus(message, type) {
 // Handle grid size change
 function handleGridSizeChange() {
   currentGridSize = parseInt(document.getElementById("gridSize").value);
+  gridData = Array(10)
+    .fill()
+    .map(() => Array(10).fill(false));
+  initGrid();
+  updateHints(); // Add this line
   updateGridInteractivity();
+  showStatus(translations[currentLanguage].status.sizeChange, "success");
 }
 
 // Update grid interactivity based on current size
