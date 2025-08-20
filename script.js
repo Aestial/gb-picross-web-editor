@@ -103,68 +103,68 @@ function updateLanguage() {
 
 // Calculate nonogram hints for a given array
 function calculateHints(arr) {
-    const hints = [];
-    let count = 0;
-    
-    for (const cell of arr) {
-        if (cell) {
-            count++;
-        } else if (count > 0) {
-            hints.push(count);
-            count = 0;
-        }
+  const hints = [];
+  let count = 0;
+
+  for (const cell of arr) {
+    if (cell) {
+      count++;
+    } else if (count > 0) {
+      hints.push(count);
+      count = 0;
     }
-    
-    if (count > 0) hints.push(count);
-    return hints.length > 0 ? hints : [0];
+  }
+
+  if (count > 0) hints.push(count);
+  return hints.length > 0 ? hints : [0];
 }
 
 // Update nonogram hints display
 function updateHints() {
-    const columnHintsContainer = document.getElementById('columnHints');
-    const rowHintsContainer = document.getElementById('rowHints');
-    
-    // Clear existing hints
-    columnHintsContainer.innerHTML = '';
-    rowHintsContainer.innerHTML = '';
-    
-    // Calculate column hints
-    for (let col = 0; col < currentGridSize; col++) {
-        const column = [];
-        for (let row = 0; row < currentGridSize; row++) {
-            column.push(gridData[col][row]);
-        }
-        const hints = calculateHints(column);
-        
-        const hintCell = document.createElement('div');
-        hintCell.className = 'hint-cell';
-        hints.forEach(hint => {
-            const hintNumber = document.createElement('div');
-            hintNumber.className = 'hint-number';
-            hintNumber.textContent = hint;
-            hintCell.appendChild(hintNumber);
-        });
-        columnHintsContainer.appendChild(hintCell);
-    }
-    
-    // Calculate row hints
+  const columnHintsContainer = document.getElementById("columnHints");
+  const rowHintsContainer = document.getElementById("rowHints");
+
+  // Clear existing hints
+  columnHintsContainer.innerHTML = "";
+  rowHintsContainer.innerHTML = "";
+
+  // Calculate column hints
+  for (let col = 0; col < currentGridSize; col++) {
+    const column = [];
     for (let row = 0; row < currentGridSize; row++) {
-        const rowData = [];
-        for (let col = 0; col < currentGridSize; col++) {
-            rowData.push(gridData[col][row]);
-        }
-        const hints = calculateHints(rowData);
-        
-        const hintCell = document.createElement('div');
-        hintCell.className = 'hint-cell';
-        hints.forEach(hint => {
-            const hintNumber = document.createElement('div');
-            hintNumber.className = 'hint-number';
-            hintNumber.textContent = hint;
-            hintCell.appendChild(hintNumber);
-        });
-        rowHintsContainer.appendChild(hintCell);
+      column.push(gridData[col][row]);
     }
+    const hints = calculateHints(column);
+
+    const hintCell = document.createElement("div");
+    hintCell.className = "hint-cell";
+    hints.forEach((hint) => {
+      const hintNumber = document.createElement("div");
+      hintNumber.className = "hint-number";
+      hintNumber.textContent = hint;
+      hintCell.appendChild(hintNumber);
+    });
+    columnHintsContainer.appendChild(hintCell);
+  }
+
+  // Calculate row hints
+  for (let row = 0; row < currentGridSize; row++) {
+    const rowData = [];
+    for (let col = 0; col < currentGridSize; col++) {
+      rowData.push(gridData[col][row]);
+    }
+    const hints = calculateHints(rowData);
+
+    const hintCell = document.createElement("div");
+    hintCell.className = "hint-cell";
+    hints.forEach((hint) => {
+      const hintNumber = document.createElement("div");
+      hintNumber.className = "hint-number";
+      hintNumber.textContent = hint;
+      hintCell.appendChild(hintNumber);
+    });
+    rowHintsContainer.appendChild(hintCell);
+  }
 }
 
 // Initialize grid UI
@@ -330,10 +330,13 @@ function initEventListeners() {
     document.getElementById("fileInput").click();
   });
 
+  let currentFileName = "";
+
   document.getElementById("fileInput").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    currentFileName = file.name; // Store the original filename
     showStatus(translations[currentLanguage].status.loading, "loading");
 
     const reader = new FileReader();
@@ -369,7 +372,7 @@ function initEventListeners() {
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = "picross.gbsres";
+      a.download = currentFileName || "win_picross.gbsres";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
