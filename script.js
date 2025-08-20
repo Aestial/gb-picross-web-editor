@@ -22,7 +22,7 @@ const translations = {
       noFile: "Error: No file loaded",
       saved: "File saved successfully!",
       cleared: "Grid cleared",
-      sizeChange: "Grid size changed",
+      sizeChange: "Grid size changed to {size}x{size}",
     },
   },
   es: {
@@ -47,7 +47,7 @@ const translations = {
       noFile: "Error: No hay archivo cargado",
       saved: "¡Archivo guardado correctamente!",
       cleared: "Cuadrícula limpiada",
-      sizeChange: "Tamaño de cuadrícula cambiado",
+      sizeChange: "Grid size changed to {size}x{size}",
     },
   },
   zh: {
@@ -72,7 +72,7 @@ const translations = {
       noFile: "错误: 没有加载文件",
       saved: "文件保存成功!",
       cleared: "网格已清除",
-      sizeChange: "网格大小已更改",
+      sizeChange: "Grid size changed to {size}x{size}",
     },
   },
 };
@@ -326,16 +326,42 @@ function showStatus(message, type) {
   }
 }
 
-// Handle grid size change
-function handleGridSizeChange() {
-  currentGridSize = parseInt(document.getElementById("gridSize").value);
-  gridData = Array(10)
-    .fill()
-    .map(() => Array(10).fill(false));
+// Enhanced grid size detection from filename
+function detectGridSizeFromFilename(filename) {
+  const sizeMatch = filename.match(/win_(\d+)x\d+/i);
+  if (sizeMatch) {
+    const size = parseInt(sizeMatch[1]);
+    if ([3, 5, 10].includes(size)) {
+      return size;
+    }
+  }
+  return 10; // Default size
+}
+
+// Enhanced grid size change handler
+function handleGridSizeChange(size = null, showStatusMessage = true) {
+  const newSize =
+    size !== null ? size : parseInt(document.getElementById("gridSize").value);
+  currentGridSize = newSize;
+
+  // Only clear grid if we're manually changing size, not when loading file
+  if (size === null) {
+    gridData = Array(10)
+      .fill()
+      .map(() => Array(10).fill(false));
+  }
+
   initGrid();
-  updateHints(); // Add this line
+  updateHints();
   updateGridInteractivity();
-  showStatus(translations[currentLanguage].status.sizeChange, "success");
+
+  if (showStatusMessage) {
+    const message = translations[currentLanguage].status.sizeChange.replace(
+      "{size}",
+      currentGridSize
+    );
+    showStatus(message, "success");
+  }
 }
 
 // Update grid interactivity based on current size
@@ -367,12 +393,18 @@ function initEventListeners() {
 
   let currentFileName = "";
 
+  // Enhanced file input handler
   document.getElementById("fileInput").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    currentFileName = file.name; // Store the original filename
+    currentFileName = file.name;
     showStatus(translations[currentLanguage].status.loading, "loading");
+
+    // Detect and set grid size from filename
+    const detectedSize = detectGridSizeFromFilename(currentFileName);
+    document.getElementById("gridSize").value = detectedSize;
+    handleGridSizeChange(detectedSize, false); // Don't show status yet
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -380,14 +412,12 @@ function initEventListeners() {
         jsonData = JSON.parse(event.target.result);
         if (parseJsonData(jsonData)) {
           initGrid();
+          showStatus(translations[currentLanguage].status.success, "success");
         }
       } catch (error) {
         console.error("File error:", error);
         showStatus(translations[currentLanguage].status.fileError, "error");
       }
-    };
-    reader.onerror = () => {
-      showStatus(translations[currentLanguage].status.fileError, "error");
     };
     reader.readAsText(file);
   });
@@ -420,18 +450,21 @@ function initEventListeners() {
     }
   });
 
+  // Enhanced clear button handler
   document.getElementById("clearBtn").addEventListener("click", () => {
     gridData = Array(10)
       .fill()
       .map(() => Array(10).fill(false));
     initGrid();
-    updateHints(); // Add this line
+    updateHints();
     showStatus(translations[currentLanguage].status.cleared, "success");
   });
 
-  document
-    .getElementById("gridSize")
-    .addEventListener("change", handleGridSizeChange);
+  // Update event listener for grid size change
+  document.getElementById("gridSize").addEventListener("change", () => {
+    handleGridSizeChange(null, true); // Show status message for manual changes
+  });
+
   document
     .getElementById("languageSelect")
     .addEventListener("change", handleLanguageChange);
